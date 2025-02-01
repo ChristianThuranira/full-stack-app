@@ -64,3 +64,7 @@ def delete_workout_plan(id):
     db.session.delete(plan)
     db.session.commit()
     return jsonify({"message": "Workout deleted"}), 200
+
+
+
+
