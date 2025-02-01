@@ -8,7 +8,7 @@ from flask_jwt_extended import create_access_token, jwt_required
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    hashed_password = generate_password_hash(data['password'], method='bcrypt')
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
     new_user = User(username=data['username'], email=data['email'], password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
@@ -24,12 +24,15 @@ def login():
         return jsonify({"token": access_token}), 200
     return jsonify({"message": "Invalid credentials"}), 401
 
-# ?? Get All Workout Plans
+# ?? Get All Workout Plans (Temporarily Removing JWT for Testing)
 @app.route('/workout_plans', methods=['GET'])
-@jwt_required()
 def get_workout_plans():
     plans = WorkoutPlan.query.all()
-    return jsonify([{"id": p.id, "title": p.title, "description": p.description} for p in plans]), 200
+    return jsonify([{
+        "id": p.id, 
+        "title": p.title, 
+        "description": p.description
+    } for p in plans]), 200
 
 # ? Create Workout Plan
 @app.route('/workout_plans', methods=['POST'])
@@ -64,7 +67,3 @@ def delete_workout_plan(id):
     db.session.delete(plan)
     db.session.commit()
     return jsonify({"message": "Workout deleted"}), 200
-
-
-
-
