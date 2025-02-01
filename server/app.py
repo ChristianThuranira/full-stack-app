@@ -1,25 +1,21 @@
 from flask import Flask
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from flask_jwt_extended import JWTManager
+from extensions import db, ma, jwt, cors
+from routes import *
+from models import *
 
+# Initialize Flask app
 app = Flask(__name__)
 
-# ? Correct Database Path
+# Database URI and configurations
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fitness.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Change this for security
+app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Change for security
 
-# ? Initialize Extensions
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
-jwt = JWTManager(app)
-CORS(app)  # Allow CORS for Postman & Frontend
-
-# ? Import Models & Routes After Initialization
-from models import *
-from routes import *
+# Initialize extensions with the app
+db.init_app(app)
+ma.init_app(app)
+jwt.init_app(app)
+cors.init_app(app)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5555)
