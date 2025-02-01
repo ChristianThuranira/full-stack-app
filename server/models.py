@@ -32,5 +32,3 @@ class Log(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.Text, nullable=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workout_plan.id'), nullable=False)
-
-
