@@ -1,7 +1,6 @@
 from flask import Flask
-from extensions import db, ma, jwt, cors
-from routes import *
-from models import *
+from extensions import db, ma, jwt, cors  # Import extensions here
+from routes import *  # Import routes
 
 # Initialize Flask app
 app = Flask(__name__)
