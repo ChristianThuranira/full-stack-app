@@ -1,6 +1,6 @@
 from app import app  # Import the app from app.py
 from extensions import db  # Import db from extensions
-from models import User, WorkoutPlan, Exercise, Days, Log
+from models import User, WorkoutPlan, Exercise, Day, Log  # Make sure 'Day' is correctly imported
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 
@@ -29,13 +29,13 @@ with app.app_context():
 
     # Seed Days
     days = [
-        Days(name="Monday"),
-        Days(name="Tuesday"),
-        Days(name="Wednesday"),
-        Days(name="Thursday"),
-        Days(name="Friday"),
-        Days(name="Saturday"),
-        Days(name="Sunday"),
+        Day(name="Monday"),
+        Day(name="Tuesday"),
+        Day(name="Wednesday"),
+        Day(name="Thursday"),
+        Day(name="Friday"),
+        Day(name="Saturday"),
+        Day(name="Sunday"),
     ]
 
     # Seed Workout Plans

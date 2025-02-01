@@ -1,60 +1,160 @@
-from flask import request, jsonify
-from extensions import db  # Import db from extensions
-from models import User, WorkoutPlan, Exercise, Days, Log
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, jsonify, request
+from models import User, Exercise, Day, WorkoutPlan, Log
+from extensions import db
+from datetime import datetime
 
-# ?? Register User
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.json
-    hashed_password = generate_password_hash(data['password'], method='bcrypt')
-    new_user = User(username=data['username'], email=data['email'], password=hashed_password)
+# Create Blueprint
+bp = Blueprint('main', __name__)
+
+# ------------------ Home Route ------------------
+@bp.route('/')
+def home():
+    return jsonify({"message": "Welcome to the Fitness App API"}), 200
+
+# ------------------ User Routes ------------------
+@bp.route('/users', methods=['GET', 'POST'])
+def users():
+    if request.method == 'GET':
+        users = User.query.all()
+        return jsonify([{ 'id': user.id, 'username': user.username, 'email': user.email } for user in users])
+    
+    data = request.get_json()
+    if not all(k in data for k in ("username", "email", "password")):
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    new_user = User(username=data['username'], email=data['email'], password=data['password'])
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({"message": "User registered successfully"}), 201
+    return jsonify({'id': new_user.id, 'username': new_user.username, 'email': new_user.email}), 201
 
-# ?? Login User
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    user = User.query.filter_by(email=data['email']).first()
-    if user and check_password_hash(user.password, data['password']):
-        return jsonify({"message": "Login successful"}), 200
-    return jsonify({"message": "Invalid credentials"}), 401
+@bp.route('/users/<int:id>', methods=['PATCH', 'DELETE'])
+def modify_user(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(user, key, value)
+        db.session.commit()
+        return jsonify({'message': 'User updated successfully'}), 200
+    
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully'}), 200
 
-# ?? Get All Workout Plans
-@app.route('/workout_plans', methods=['GET'])
-def get_workout_plans():
-    plans = WorkoutPlan.query.all()
-    return jsonify([{"id": p.id, "title": p.title, "description": p.description} for p in plans]), 200
+# ------------------ Exercise Routes ------------------
+@bp.route('/exercises', methods=['GET', 'POST'])
+def exercises():
+    if request.method == 'GET':
+        exercises = Exercise.query.all()
+        return jsonify([{ 'id': exercise.id, 'name': exercise.name } for exercise in exercises])
+    
+    data = request.get_json()
+    if "name" not in data:
+        return jsonify({"error": "Exercise name is required"}), 400
+    
+    new_exercise = Exercise(name=data['name'])
+    db.session.add(new_exercise)
+    db.session.commit()
+    return jsonify({'id': new_exercise.id, 'name': new_exercise.name}), 201
 
-# ? Create Workout Plan
-@app.route('/workout_plans', methods=['POST'])
-def create_workout_plan():
-    data = request.json
+@bp.route('/exercises/<int:id>', methods=['PATCH', 'DELETE'])
+def modify_exercise(id):
+    exercise = Exercise.query.get_or_404(id)
+    if request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(exercise, key, value)
+        db.session.commit()
+        return jsonify({'message': 'Exercise updated successfully'}), 200
+    
+    db.session.delete(exercise)
+    db.session.commit()
+    return jsonify({'message': 'Exercise deleted successfully'}), 200
+
+# ------------------ Day Routes ------------------
+@bp.route('/days', methods=['GET', 'POST'])
+def days():
+    if request.method == 'GET':
+        days = Day.query.all()
+        return jsonify([{ 'id': day.id, 'name': day.name } for day in days])
+    
+    data = request.get_json()
+    if "name" not in data:
+        return jsonify({"error": "Day name is required"}), 400
+    
+    new_day = Day(name=data['name'])
+    db.session.add(new_day)
+    db.session.commit()
+    return jsonify({'id': new_day.id, 'name': new_day.name}), 201
+
+@bp.route('/days/<int:id>', methods=['PATCH', 'DELETE'])
+def modify_day(id):
+    day = Day.query.get_or_404(id)
+    if request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(day, key, value)
+        db.session.commit()
+        return jsonify({'message': 'Day updated successfully'}), 200
+    
+    db.session.delete(day)
+    db.session.commit()
+    return jsonify({'message': 'Day deleted successfully'}), 200
+
+# ------------------ Workout Plan Routes ------------------
+@bp.route('/workout-plans', methods=['GET', 'POST'])
+def workout_plans():
+    if request.method == 'GET':
+        workout_plans = WorkoutPlan.query.all()
+        return jsonify([{ 'id': plan.id, 'title': plan.title } for plan in workout_plans])
+    
+    data = request.get_json()
+    required_fields = ["title", "description", "difficulty_level", "time", "duration_minutes", "calories_burned", "exercise_id", "user_id", "day_id"]
+    if not all(k in data for k in required_fields):
+        return jsonify({"error": "Missing required fields"}), 400
+    
     new_plan = WorkoutPlan(**data)
     db.session.add(new_plan)
     db.session.commit()
-    return jsonify({"message": "Workout plan created"}), 201
+    return jsonify({'id': new_plan.id, 'title': new_plan.title}), 201
 
-# ?? Update Workout Plan
-@app.route('/workout_plans/<int:id>', methods=['PATCH'])
-def update_workout_plan(id):
-    plan = WorkoutPlan.query.get(id)
-    if not plan:
-        return jsonify({"message": "Workout not found"}), 404
-    data = request.json
-    for key, value in data.items():
-        setattr(plan, key, value)
-    db.session.commit()
-    return jsonify({"message": "Workout updated"}), 200
-
-# ? Delete Workout Plan
-@app.route('/workout_plans/<int:id>', methods=['DELETE'])
-def delete_workout_plan(id):
-    plan = WorkoutPlan.query.get(id)
-    if not plan:
-        return jsonify({"message": "Workout not found"}), 404
+@bp.route('/workout-plans/<int:id>', methods=['PATCH', 'DELETE'])
+def modify_workout_plan(id):
+    plan = WorkoutPlan.query.get_or_404(id)
+    if request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(plan, key, value)
+        db.session.commit()
+        return jsonify({'message': 'Workout plan updated successfully'}), 200
+    
     db.session.delete(plan)
     db.session.commit()
-    return jsonify({"message": "Workout deleted"}), 200
+    return jsonify({'message': 'Workout plan deleted successfully'}), 200
+
+# ------------------ Log Routes ------------------
+@bp.route('/logs', methods=['GET', 'POST'])
+def logs():
+    if request.method == 'GET':
+        logs = Log.query.all()
+        return jsonify([{ 'id': log.id, 'completed_date': log.completed_date.strftime('%Y-%m-%d') } for log in logs])
+    
+    data = request.get_json()
+    new_log = Log(**data)
+    db.session.add(new_log)
+    db.session.commit()
+    return jsonify({'id': new_log.id, 'completed_date': new_log.completed_date.strftime('%Y-%m-%d')}), 201
+
+@bp.route('/logs/<int:id>', methods=['PATCH', 'DELETE'])
+def modify_log(id):
+    log = Log.query.get_or_404(id)
+    if request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(log, key, value)
+        db.session.commit()
+        return jsonify({'message': 'Log updated successfully'}), 200
+    
+    db.session.delete(log)
+    db.session.commit()
+    return jsonify({'message': 'Log deleted successfully'}), 200
