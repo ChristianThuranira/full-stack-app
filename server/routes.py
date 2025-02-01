@@ -4,7 +4,7 @@ from models import User, WorkoutPlan
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required
 
-# Create a Blueprint instead of directly attaching routes to app
+# Create a Blueprint
 routes = Blueprint('routes', __name__)
 
 # ?? Register User
@@ -26,3 +26,44 @@ def login():
         access_token = create_access_token(identity=user.id)
         return jsonify({"token": access_token}), 200
     return jsonify({"message": "Invalid credentials"}), 401
+
+# ?? Get All Workout Plans
+@routes.route('/workout_plans', methods=['GET'])
+@jwt_required()
+def get_workout_plans():
+    plans = WorkoutPlan.query.all()
+    return jsonify([{"id": p.id, "title": p.title, "description": p.description} for p in plans]), 200
+
+# ? Create Workout Plan
+@routes.route('/workout_plans', methods=['POST'])
+@jwt_required()
+def create_workout_plan():
+    data = request.json
+    new_plan = WorkoutPlan(**data)
+    db.session.add(new_plan)
+    db.session.commit()
+    return jsonify({"message": "Workout plan created"}), 201
+
+# ?? Update Workout Plan
+@routes.route('/workout_plans/<int:id>', methods=['PATCH'])
+@jwt_required()
+def update_workout_plan(id):
+    plan = WorkoutPlan.query.get(id)
+    if not plan:
+        return jsonify({"message": "Workout not found"}), 404
+    data = request.json
+    for key, value in data.items():
+        setattr(plan, key, value)
+    db.session.commit()
+    return jsonify({"message": "Workout updated"}), 200
+
+# ? Delete Workout Plan
+@routes.route('/workout_plans/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_workout_plan(id):
+    plan = WorkoutPlan.query.get(id)
+    if not plan:
+        return jsonify({"message": "Workout not found"}), 404
+    db.session.delete(plan)
+    db.session.commit()
+    return jsonify({"message": "Workout deleted"}), 200
