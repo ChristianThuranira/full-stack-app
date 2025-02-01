@@ -1,18 +1,10 @@
-from extensions import db  # Ensure that db is initialized
+from extensions import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-
-class Exercise(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-
-class Days(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
 
 class WorkoutPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,10 +18,13 @@ class WorkoutPlan(db.Model):
     calories_burned = db.Column(db.Integer, nullable=False)
     day_id = db.Column(db.Integer, db.ForeignKey('days.id'), nullable=False)
 
-    # Define relationships
-    exercise = db.relationship('Exercise', backref='workout_plans')
-    user = db.relationship('User', backref='workout_plans')
-    day = db.relationship('Days', backref='workout_plans')
+class Exercise(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+class Days(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
 class Log(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,5 +32,3 @@ class Log(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.Text, nullable=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workout_plan.id'), nullable=False)
-
-    workout_plan = db.relationship('WorkoutPlan', backref='logs')
