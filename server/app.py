@@ -1,30 +1,25 @@
 from flask import Flask, jsonify
-from extensions import db, ma, jwt, cors  
-from routes import routes  # Import the blueprint
+from extensions import db, ma, cors, jwt
+from config import Config
+from routes import api_bp
 
-# Initialize Flask app
 app = Flask(__name__)
+app.config.from_object(Config)
 
-# Database configurations
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fitness.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Change for security
-
-# Initialize extensions with the app
+# Initialize extensions
 db.init_app(app)
 ma.init_app(app)
 jwt.init_app(app)
 cors.init_app(app)
 
-# Register the blueprint with a prefix
-app.register_blueprint(routes, url_prefix='/api')
+# Register routes
+app.register_blueprint(api_bp, url_prefix='/api')
 
-# Default route to check if the app is running
 @app.route('/')
 def home():
-    return jsonify({"message": "Welcome to the Fitness API!"}), 200
+    return jsonify({"message": "Fitness API Running"}), 200
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Ensure tables are created before running
+        db.create_all()
     app.run(debug=True, port=5555)

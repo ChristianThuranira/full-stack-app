@@ -1,4 +1,3 @@
-from flask import Flask
 from extensions import db
 from models import User, WorkoutPlan, Exercise, Days, Log
 from werkzeug.security import generate_password_hash
