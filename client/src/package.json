@@ -1,0 +1,15 @@
+{
+    "name": "gym-workout-planner-frontend",
+    "version": "1.0.0",
+    "dependencies": {
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "react-router-dom": "^6.4.0",
+      "bootstrap": "^5.3.0",
+      "formik": "^2.2.9"
+    },
+    "scripts": {
+      "start": "react-scripts start"
+    }
+  }
+  
