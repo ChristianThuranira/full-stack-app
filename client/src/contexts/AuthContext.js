@@ -1,40 +1,24 @@
-import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+// /src/contexts/AuthContext.js
 
-export const AuthContext = createContext();
+import React, { createContext, useState, useContext } from 'react';
 
+// Create the AuthContext
+const AuthContext = createContext();
+
+// Custom hook to use AuthContext
+export const useAuth = () => useContext(AuthContext);
+
+// AuthProvider component to provide authentication context
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // User state
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      axios
-        .get("http://localhost:5000/api/protected", {
-          headers: { "x-auth-token": token },
-        })
-        .then((response) => {
-          setUser(response.data);
-        })
-        .catch(() => {
-          localStorage.removeItem("authToken");
-        });
-    }
-  }, []);
-
-  const login = (token) => {
-    localStorage.setItem("authToken", token);
-    axios
-      .get("http://localhost:5000/api/protected", {
-        headers: { "x-auth-token": token },
-      })
-      .then((response) => {
-        setUser(response.data);
-      });
+  const login = (username, password) => {
+    // Perform login logic, set user in state
+    setUser({ username });
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
+    // Perform logout logic, reset user state
     setUser(null);
   };
 
