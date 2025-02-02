@@ -1,8 +1,18 @@
-import React from "react";
-import App from "./components/App";
-import "./App.css";
-import { createRoot } from "react-dom/client";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css'; // Import global styles
+import App from './App'; // Import the main App component
+import { BrowserRouter as Router } from 'react-router-dom'; // Import React Router for routing
+import { AuthProvider } from './contexts/AuthContext'; // Import the AuthProvider for managing authentication state
 
-const container = document.getElementById("root");
-const root = createRoot(container);
-root.render(<App />);
+// Render the app inside the "root" div and wrap it with AuthProvider and Router
+ReactDOM.render(
+  <React.StrictMode>
+    <AuthProvider>
+      <Router>
+        <App />
+      </Router>
+    </AuthProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
