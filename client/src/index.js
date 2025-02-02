@@ -1,11 +1,13 @@
+// /src/index.js
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css'; // Import global styles
-import App from './App'; // Import the main App component
-import { BrowserRouter as Router } from 'react-router-dom'; // Import React Router for routing
-import { AuthProvider } from './contexts/AuthContext'; // Import the AuthProvider for managing authentication state
+import './styles/index.css'; // Global styles
+import App from './App';      // Main app component
+import { BrowserRouter as Router } from 'react-router-dom'; // For routing
+import { AuthProvider } from './contexts/AuthContext'; // For auth context
 
-// Render the app inside the "root" div and wrap it with AuthProvider and Router
+// Rendering the app and wrapping it with providers
 ReactDOM.render(
   <React.StrictMode>
     <AuthProvider>
