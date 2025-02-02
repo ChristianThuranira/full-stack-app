@@ -1,29 +1,21 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
-import Dashboard from "./components/Dashboard";
-import ThemeSwitcher from "./components/ThemeSwitcher";
-import './App.css';
+// /src/App.js
+
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import Login from './components/Login'; // Login component
+import Dashboard from './components/Dashboard'; // Dashboard component
+import WorkoutPlan from './components/WorkoutPlan'; // Workout plan component
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div>
-          <ThemeSwitcher />
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/" exact>
-              <h2>Welcome to the Workout Planner</h2>
-            </Route>
-          </Switch>
-        </div>
-      </Router>
-    </AuthProvider>
+    <div className="App">
+      <h1>Workout Planner</h1>
+      <Switch>
+        <Route exact path="/" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/workout-plan" component={WorkoutPlan} />
+      </Switch>
+    </div>
   );
 }
 
