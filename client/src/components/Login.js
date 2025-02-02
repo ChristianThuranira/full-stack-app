@@ -1,44 +1,41 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
+// /src/components/Login.js
+
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useHistory } from 'react-router-dom';
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
   const history = useHistory();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      });
-      login(response.data.token);
-      history.push("/dashboard");
-    } catch (err) {
-      alert("Invalid credentials.");
-    }
+    login(username, password); // Authenticate the user
+    history.push('/dashboard'); // Redirect to dashboard
   };
 
   return (
     <div>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div>
+          <label>Username: </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Password: </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
         <button type="submit">Login</button>
       </form>
     </div>
