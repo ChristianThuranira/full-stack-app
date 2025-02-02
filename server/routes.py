@@ -9,7 +9,7 @@ bp = Blueprint('main', __name__)
 # ------------------ Home Route ------------------
 @bp.route('/')
 def home():
-    return jsonify({"message": "Welcome to the Fitness App API"}), 200
+    return jsonify({"Hey, Jambo": "Karibu to the Fitness App API By Thuranira"}), 200
 
 # ------------------ User Routes ------------------
 @bp.route('/users', methods=['GET', 'POST'])
