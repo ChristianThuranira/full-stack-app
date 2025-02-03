@@ -13,7 +13,7 @@ function Logs() {
 
   return (
     <div className="container mt-5">
-      <h2>Workout Logs</h2>
+      <h2 className="text-center text-warning mb-4">Workout Logs</h2>
       {logs.map(log => (
         <LogCard key={log.id} log={log} />
       ))}

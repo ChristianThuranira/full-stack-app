@@ -6,6 +6,7 @@ import Workouts from './pages/Workouts';
 import Exercises from './pages/Exercises';
 import Logs from './pages/Logs';
 
+
 function App() {
   return (
     <div>
