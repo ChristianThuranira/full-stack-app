@@ -12,10 +12,10 @@ with app.app_context():
 
     # Seed Users
     users = [
-        User(username="JohnDoe", email="john@example.com",
+        User(username="mende", email="mende@example.com",
              password=generate_password_hash("password123", method='pbkdf2:sha256')),
 
-        User(username="JaneDoe", email="jane@example.com",
+        User(username="malu", email="malu@example.com",
              password=generate_password_hash("securepass", method='pbkdf2:sha256'))
     ]
 
